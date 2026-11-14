@@ -1,0 +1,134 @@
+# HTMLツールの週1テスト
+# GitHub Pagesで公開中のツールを毎週自動で開き、エラーが出ていないかを確かめます（読むだけ。入力・保存はしません）。
+# 結果は result.json に保存され、Archlogの「点検」に表示されます。問題があればGitHubからメールも届きます。
+# テストから外したいツールがあれば、下の SKIP にリポジトリ名をカンマ区切りで書きます（例: SKIP: "structure-3d-tool,old-tool"）。
+name: HTMLツールの週1テスト
+on:
+  schedule:
+    - cron: "7 18 * * 1"   # 毎週火曜 3:07（日本時間）
+  workflow_dispatch:        # 「Run workflow」ボタンで今すぐ実行
+permissions:
+  contents: write
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      SKIP: ""
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: テストの道具を用意
+        run: |
+          npm install --no-save --no-package-lock playwright@1.48.2
+          npx playwright install --with-deps chromium
+      - name: 公開中のツールを探す
+        env:
+          GH_TOKEN: ${{ github.token }}
+          OWNER: ${{ github.repository_owner }}
+          SELF: ${{ github.event.repository.name }}
+        run: |
+          cat > list.js <<'EOF'
+          // GitHub Pagesで公開中のツール（各リポジトリの直下にある .html）を一覧にする
+          const o = process.env.OWNER, self = process.env.SELF;
+          const skip = (process.env.SKIP || '').split(',').map(s => s.trim()).filter(Boolean);
+          const api = process.env.API || 'https://api.github.com';
+          async function get(path) {
+            const h = { 'User-Agent': 'tool-check', Accept: 'application/vnd.github+json' };
+            let r = process.env.GH_TOKEN ? await fetch(api + path, { headers: Object.assign({ Authorization: 'Bearer ' + process.env.GH_TOKEN }, h) }) : null;
+            if (!r || !r.ok) r = await fetch(api + path, { headers: h }); // 他のリポジトリが読めないときは、ふつうの公開APIで読む
+            if (!r.ok) throw new Error(path + ' ' + r.status);
+            return r.json();
+          }
+          (async () => {
+            const repos = await get(`/users/${o}/repos?per_page=100`);
+            const out = [];
+            for (const r of repos) {
+              if (!r.has_pages || r.archived || r.fork || r.name === self || skip.includes(r.name)) continue;
+              const base = r.name.toLowerCase() === `${o}.github.io`.toLowerCase() ? `https://${o}.github.io/` : `https://${o}.github.io/${r.name}/`;
+              let files = [];
+              try { files = (await get(`/repos/${o}/${r.name}/contents/?ref=${encodeURIComponent(r.default_branch)}`)).filter(f => f.type === 'file' && /\.html?$/i.test(f.name)).map(f => f.name); }
+              catch (e) { files = ['index.html']; }
+              files.sort((a, b) => (b === 'index.html') - (a === 'index.html') || a.localeCompare(b));
+              for (const f of files.slice(0, 6)) {
+                if (skip.includes(r.name + '/' + f)) continue;
+                out.push({ name: f === 'index.html' ? r.name : r.name + '/' + f, url: base + (f === 'index.html' ? '' : encodeURIComponent(f)) });
+              }
+            }
+            process.stdout.write(JSON.stringify(out, null, 1));
+            console.error(out.length + '件のページをテストします');
+          })().catch(e => { console.error(e); process.exit(1); });
+          EOF
+          node list.js > targets.json
+      - name: ツールを1つずつ開いて確かめる
+        run: |
+          cat > smoke.js <<'EOF'
+          // 公開中のHTMLツールを1つずつ開いて、壊れていないかを確かめる（読むだけ。入力・保存はしない）
+          // 使い方: node smoke.js <URLの一覧ファイル> <結果のJSON>
+          const { chromium } = require('playwright');
+          const fs = require('fs');
+          const [, , listFile, outFile] = process.argv;
+          const targets = JSON.parse(fs.readFileSync(listFile, 'utf8')); // [{name, url}]
+
+          (async () => {
+            const browser = await chromium.launch();
+            const results = [];
+            for (const t of targets) {
+              const r = { name: t.name, url: t.url, ok: true, problems: [], warnings: [] };
+              const ctx = await browser.newContext({ viewport: { width: 1366, height: 900 }, locale: 'ja-JP', timezoneId: 'Asia/Tokyo' });
+              const page = await ctx.newPage();
+              const own = new URL(t.url).origin;
+              page.on('pageerror', e => r.problems.push('画面のプログラムでエラー：' + String(e.message || e).split('\n')[0].slice(0, 160)));
+              page.on('console', m => { if (m.type() === 'error') r.warnings.push('コンソール：' + m.text().split('\n')[0].slice(0, 160)); });
+              page.on('dialog', d => { r.warnings.push('ダイアログ：' + d.message().slice(0, 80)); d.dismiss().catch(() => {}); });
+              page.on('response', res => {
+                const u = res.url();
+                if (res.status() >= 400 && u.startsWith(own)) r.problems.push('ファイルが見つかりません（' + res.status() + '）：' + u.replace(own, ''));
+              });
+              page.on('requestfailed', req => {
+                const u = req.url();
+                if (/\.(js|css)(\?|$)/.test(u)) r.warnings.push('読み込めない部品：' + u.slice(0, 120));
+              });
+              try {
+                const res = await page.goto(t.url, { waitUntil: 'load', timeout: 45000 });
+                if (!res || res.status() >= 400) r.problems.push('ページが開けません（' + (res ? res.status() : '応答なし') + '）');
+                await page.waitForTimeout(4000);
+                const text = await page.evaluate(() => (document.body && document.body.innerText || '').trim().length);
+                if (text < 20) r.problems.push('画面がほぼ空です（文字数 ' + text + '）');
+              } catch (e) {
+                r.problems.push('開く途中で止まりました：' + String(e.message || e).split('\n')[0].slice(0, 160));
+              }
+              r.problems = [...new Set(r.problems)].slice(0, 8);
+              r.warnings = [...new Set(r.warnings)].slice(0, 8);
+              r.ok = r.problems.length === 0;
+              results.push(r);
+              console.log((r.ok ? 'OK  ' : 'NG  ') + t.name + (r.ok ? '' : '  ' + r.problems.join(' / ')));
+              await ctx.close();
+            }
+            await browser.close();
+            const bad = results.filter(x => !x.ok);
+            const out = {
+              key: 'HTMLツール', label: 'HTMLツールの週1テスト（GitHub）', updated: Date.now(), interval: 4000,
+              error: '', total: results.length, failed: bad.length,
+              checks: results.map(x => ({ name: x.name, ok: x.ok, detail: x.problems.join(' / ') })),
+              results
+            };
+            fs.writeFileSync(outFile, JSON.stringify(out, null, 1));
+            console.log(`\n${results.length}件中 ${bad.length}件で問題`);
+          })();
+          EOF
+          node smoke.js targets.json result.json
+      - name: 結果を保存
+        if: always()
+        run: |
+          [ -f result.json ] || echo '{"key":"HTMLツール","label":"HTMLツールの週1テスト（GitHub）","updated":'$(date +%s000)',"interval":4000,"error":"テストが途中で止まりました（GitHubのActionsで内容を確認してください）","checks":[]}' > result.json
+          git config user.name "tool-check"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add result.json
+          git commit -m "週1テストの結果" || echo "変更なし"
+          git push
+      - name: 問題があれば失敗にする（GitHubからメールが届く）
+        run: |
+          node -e "process.exit(require('./result.json').failed ? 1 : 0)"
