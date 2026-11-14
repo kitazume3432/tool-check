@@ -1,0 +1,279 @@
+{
+ "key": "HTMLツール",
+ "label": "HTMLツールの週1テスト（GitHub）",
+ "updated": 1794630319979,
+ "interval": 4000,
+ "error": "",
+ "total": 22,
+ "failed": 0,
+ "checks": [
+  {
+   "name": "andpad-mitsumori-tool",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "gaisan-mitsumori-tool",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "genba-shinchoku",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "kansan-tool",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "kasika-tool",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "koji-kanri-hokokusho",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "kotei-kanri-tool",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "mail-reply-tool",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "randy-step-tracker",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "randy-step-tracker/contract-tracker.html",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "shiagehyo-tool",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "shiagehyou-tool",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "shikin-keikaku-tool",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "shiryou-raijou-tool",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "siryou-presen-tool",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "siryou-presen-tool/仕様プレゼン作成ツール.html",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "smileclub-tool",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "smileclub-tool/label.html",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "structure-3d-tool",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "todo-app",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "toshikeikaku-links-tool",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "unified-project-tool",
+   "ok": true,
+   "detail": ""
+  }
+ ],
+ "results": [
+  {
+   "name": "andpad-mitsumori-tool",
+   "url": "https://kitazume3432.github.io/andpad-mitsumori-tool/",
+   "ok": true,
+   "problems": [],
+   "warnings": []
+  },
+  {
+   "name": "gaisan-mitsumori-tool",
+   "url": "https://kitazume3432.github.io/gaisan-mitsumori-tool/",
+   "ok": true,
+   "problems": [],
+   "warnings": []
+  },
+  {
+   "name": "genba-shinchoku",
+   "url": "https://kitazume3432.github.io/genba-shinchoku/",
+   "ok": true,
+   "problems": [],
+   "warnings": [
+    "読み込めない部品：https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/3.1.0/iconfont/tabler-icons.min.css"
+   ]
+  },
+  {
+   "name": "kansan-tool",
+   "url": "https://kitazume3432.github.io/kansan-tool/",
+   "ok": true,
+   "problems": [],
+   "warnings": []
+  },
+  {
+   "name": "kasika-tool",
+   "url": "https://kitazume3432.github.io/kasika-tool/",
+   "ok": true,
+   "problems": [],
+   "warnings": []
+  },
+  {
+   "name": "koji-kanri-hokokusho",
+   "url": "https://kitazume3432.github.io/koji-kanri-hokokusho/",
+   "ok": true,
+   "problems": [],
+   "warnings": []
+  },
+  {
+   "name": "kotei-kanri-tool",
+   "url": "https://kitazume3432.github.io/kotei-kanri-tool/",
+   "ok": true,
+   "problems": [],
+   "warnings": []
+  },
+  {
+   "name": "mail-reply-tool",
+   "url": "https://kitazume3432.github.io/mail-reply-tool/",
+   "ok": true,
+   "problems": [],
+   "warnings": []
+  },
+  {
+   "name": "randy-step-tracker",
+   "url": "https://kitazume3432.github.io/randy-step-tracker/",
+   "ok": true,
+   "problems": [],
+   "warnings": []
+  },
+  {
+   "name": "randy-step-tracker/contract-tracker.html",
+   "url": "https://kitazume3432.github.io/randy-step-tracker/contract-tracker.html",
+   "ok": true,
+   "problems": [],
+   "warnings": []
+  },
+  {
+   "name": "shiagehyo-tool",
+   "url": "https://kitazume3432.github.io/shiagehyo-tool/",
+   "ok": true,
+   "problems": [],
+   "warnings": []
+  },
+  {
+   "name": "shiagehyou-tool",
+   "url": "https://kitazume3432.github.io/shiagehyou-tool/",
+   "ok": true,
+   "problems": [],
+   "warnings": []
+  },
+  {
+   "name": "shikin-keikaku-tool",
+   "url": "https://kitazume3432.github.io/shikin-keikaku-tool/",
+   "ok": true,
+   "problems": [],
+   "warnings": []
+  },
+  {
+   "name": "shiryou-raijou-tool",
+   "url": "https://kitazume3432.github.io/shiryou-raijou-tool/",
+   "ok": true,
+   "problems": [],
+   "warnings": []
+  },
+  {
+   "name": "siryou-presen-tool",
+   "url": "https://kitazume3432.github.io/siryou-presen-tool/",
+   "ok": true,
+   "problems": [],
+   "warnings": []
+  },
+  {
+   "name": "siryou-presen-tool/仕様プレゼン作成ツール.html",
+   "url": "https://kitazume3432.github.io/siryou-presen-tool/%E4%BB%95%E6%A7%98%E3%83%97%E3%83%AC%E3%82%BC%E3%83%B3%E4%BD%9C%E6%88%90%E3%83%84%E3%83%BC%E3%83%AB.html",
+   "ok": true,
+   "problems": [],
+   "warnings": []
+  },
+  {
+   "name": "smileclub-tool",
+   "url": "https://kitazume3432.github.io/smileclub-tool/",
+   "ok": true,
+   "problems": [],
+   "warnings": []
+  },
+  {
+   "name": "smileclub-tool/label.html",
+   "url": "https://kitazume3432.github.io/smileclub-tool/label.html",
+   "ok": true,
+   "problems": [],
+   "warnings": []
+  },
+  {
+   "name": "structure-3d-tool",
+   "url": "https://kitazume3432.github.io/structure-3d-tool/",
+   "ok": true,
+   "problems": [],
+   "warnings": []
+  },
+  {
+   "name": "todo-app",
+   "url": "https://kitazume3432.github.io/todo-app/",
+   "ok": true,
+   "problems": [],
+   "warnings": []
+  },
+  {
+   "name": "toshikeikaku-links-tool",
+   "url": "https://kitazume3432.github.io/toshikeikaku-links-tool/",
+   "ok": true,
+   "problems": [],
+   "warnings": []
+  },
+  {
+   "name": "unified-project-tool",
+   "url": "https://kitazume3432.github.io/unified-project-tool/",
+   "ok": true,
+   "problems": [],
+   "warnings": []
+  }
+ ]
+}
